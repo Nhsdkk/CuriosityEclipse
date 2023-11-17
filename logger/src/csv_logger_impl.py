@@ -1,20 +1,25 @@
 from pandas import read_csv
 from numpy import zeros
+from typing import Self
 
-from logger.src.logger_interface import LoggerInterface
+from .logger_interface import LoggerInterface
+from shared.constructor_locker import ConstructorLocker
 
 
-class CsvLogger(LoggerInterface):
+class CsvLogger(LoggerInterface, metaclass=ConstructorLocker):
     """
     Class for logger, which outputs to CSV file
     """
 
     _column_name_last_index_mapping: dict[str, int] = {}
     _filename: str = None
+    _instance = None
 
-    def __init__(self, filename: str = "log.csv"):
+    def __init__(self, filename: str):
         """
-        :param filename: name of the file to write (by default "log.csv")
+        Private constructor
+
+        :param filename: name of the file to write
         """
         self._filename = filename
 
@@ -63,3 +68,14 @@ class CsvLogger(LoggerInterface):
         self._write_fs(
             variable_type, value, variable_type in self._column_name_last_index_mapping
         )
+
+    @classmethod
+    def create(cls, filename: str = "out.csv") -> Self:
+        """
+        Public constructor
+
+        :param filename: name of the file to write (by default "log.csv")
+        :return: CsvLogger class instance
+        """
+        cls._filename = filename
+        return cls
