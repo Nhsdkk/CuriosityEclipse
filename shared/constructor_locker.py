@@ -1,7 +1,5 @@
 class ConstructorLocker(type):
-    """
-    Metaclass to make private constructor
-    """
+    """Metaclass to make private constructor"""
 
     def __call__(cls, *args, **kwargs) -> None:
         """

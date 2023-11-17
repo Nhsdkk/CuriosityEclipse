@@ -7,9 +7,7 @@ from shared.constructor_locker import ConstructorLocker
 
 
 class CsvLogger(LoggerInterface, metaclass=ConstructorLocker):
-    """
-    Class for logger, which outputs to CSV file
-    """
+    """Class for logger, which outputs to CSV file"""
 
     _column_name_last_index_mapping: dict[str, int] = {}
     _filename: str = None
