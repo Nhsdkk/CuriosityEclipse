@@ -3,7 +3,7 @@ class LoggerInterface:
 
     def log(self, variable_type: str, value: float) -> None:
         """
-        Log values
+        Log the value of the variable
 
         :param variable_type: Type, that allows us to assign variable to the group
         :param value: Value, that need to be logged
