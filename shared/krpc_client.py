@@ -6,7 +6,8 @@ class KRPCClientSingleton:
 
     _client = None
 
-    def create(self, address: str, port: int = 1000, stream_port: int = 1001) -> Client:
+    @classmethod
+    def create(cls, address: str, port: int = 1000, stream_port: int = 1001) -> Client:
         """
         Get KRPC client instance
 
@@ -15,13 +16,13 @@ class KRPCClientSingleton:
         :param stream_port: port for io stream
         :return: KRPC client instance
         """
-        if self._client is None:
-            self._client = connect(
+        if cls._client is None:
+            cls._client = connect(
                 name="KSP_client",
                 address=address,
                 rpc_port=port,
                 stream_port=stream_port,
             )
-            return self._client
+            return cls._client
 
-        return self._client
+        return cls._client
