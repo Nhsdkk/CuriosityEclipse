@@ -1,7 +1,7 @@
 from shared.constructor_locker import ConstructorLocker
 
 
-class LoggerInterface (metaclass=ConstructorLocker):
+class LoggerInterface(metaclass=ConstructorLocker):
     """Interface for logger"""
 
     def log(self, variable_type: str, value: float) -> None:

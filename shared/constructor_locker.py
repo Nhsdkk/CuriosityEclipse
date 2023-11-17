@@ -2,6 +2,7 @@ class ConstructorLocker(type):
     """
     Metaclass to make private constructor
     """
+
     def __call__(cls, *args, **kwargs) -> None:
         """
         Raise error when trying to call class constructor
