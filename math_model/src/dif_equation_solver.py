@@ -8,8 +8,7 @@ class Equation:
     def __init__(
         self,
         r0: Union[float, int] = 0,
-        time: Union[float, int] = 300,
-        # u: Union[float, int] = 1.83211
+        time: Union[float, int] = 311.3,
         h: Union[float, int] = 1e-5,
         k: Union[float, int] = 1510.84,
         m_of: Union[float, int] = 539287,
@@ -20,7 +19,7 @@ class Equation:
         temperature0: Union[float, int] = 293,
     ):
         """
-
+        Ya geniy
 
         :param r0:
         :param time:
@@ -44,11 +43,11 @@ class Equation:
         self.m_of = m_of
         self.r0 = r0
         self.r1 = (
-            self.h**2
-            * (
+            (
                 self.p_thrust / self.find_m(self.h)
                 - self.G * self.m_earth / self.R_earth**2
             )
+            * self.h**2
             / 2
         )
         self.c = c
@@ -58,7 +57,8 @@ class Equation:
         self.temperature0 = temperature0
 
     def find_m(self, t: Union[float, int]) -> Union[float, int]:
-        return self.m_of - self.k * t
+        temp_mass = self.m_of - self.k * t
+        return temp_mass if temp_mass > 37736 else 37736
 
     def find_g(self, r: Union[float, int]) -> Union[float, int]:
         return self.G * self.m_earth / (self.R_earth + r) ** 2
@@ -76,11 +76,15 @@ class Equation:
         return self.find_p(r) * self.M / (self.R * self.find_temperature(r))
 
     def fi(self, r: Union[float, int], t: Union[float, int]) -> Union[float, int]:
-        return -self.G * self.m_earth / (
-            self.R_earth + r
-        ) ** 2 + self.p_thrust / self.find_m(t)
+        temp_thrust = self.p_thrust / self.find_m(t)
+        if t > 311.3:
+            return -self.G * self.m_earth / (self.R_earth + r) ** 2
+        else:
+            return temp_thrust - self.G * self.m_earth / (self.R_earth + r) ** 2
 
     def w(self, r: Union[float, int], t: Union[float, int]) -> Union[float, int]:
+        if t > 311.3:
+            return 0
         return -self.c * self.v ** (2 / 3) * self.find_ro(r) / (2 * self.find_m(t))
 
     def find_roots_good_approximation(
@@ -106,7 +110,7 @@ class Equation:
 
     def get_next_rs(
         self, t: int, r_i_minus1: Union[float, int], r_i: Union[float, int]
-    ) -> tuple[Union[float, int], Union[float, int]]:
+    ) -> Union[float, int]:
         roots = self.find_roots_good_approximation(t, r_i_minus1, r_i)
         if len(roots) == 1:
             x1, x2 = roots, roots
@@ -117,40 +121,38 @@ class Equation:
             item for item in [x1, x2] if item >= 0 and type(item) is not complex
         )
         x = self.find_root_bad_approximation(t, r_i_minus1, r_i)
-        return x, min(roots, key=lambda q: abs(q - x))
+        return min(roots, key=lambda q: abs(q - x))
 
-    def solve(self) -> str:
+    def solve(self) -> None:
         r_0 = self.r0
         r_1 = self.r1
-        r_difference_sum = 0
-        iterations = self.n
         abscissa_array = np.zeros(self.n + 2, dtype="float64")
-        ord_array_1 = np.zeros(self.n + 2, dtype="float64")
-        ord_array_2 = np.zeros(self.n + 2, dtype="float64")
-        ord_array_1[1], ord_array_2[1] = r_1, r_1
+        ordinate_array = np.zeros(self.n + 2, dtype="float64")
+        ordinate_array[1] = r_1
 
         for i in np.arange(1, self.n + 1):
             t = i * self.h
             abscissa_array[i] = t
-            ord1, ord2 = self.get_next_rs(t, r_i_minus1=r_0, r_i=r_1)
-            ord_array_1[i + 1], ord_array_2[i + 1] = ord1, ord2
+            ordinate = self.get_next_rs(t, r_i_minus1=r_0, r_i=r_1)
+            ordinate_array[i + 1] = ordinate
             if not i % 100000:
-                print(
-                    f"Время: {t:.5f} с, Высота: {ord2:.5f} м, Скорость: {(ord2 - r_0) / (2 * self.h):.5f} м / с, "
-                    f"Ускорение: {(ord2 - 2 * r_1 + r_0) / self.h ** 2:.5f} м / c ^ 2"
-                )
-            r_0, r_1 = r_1, ord2
-            r_difference_sum += r_1 - r_0
+                with open("rocket_flight_stats.txt", "a+") as file:
+                    print(
+                        f"Time: {t:.5f} s, Height: {ordinate:.5f} m, "
+                        f"Speed: {(ordinate - r_0) / (2 * self.h):.5f} m / s, "
+                        f"Acceleration: {(ordinate - 2 * r_1 + r_0) / self.h ** 2:.5f} m / s ^ 2",
+                        file=file,
+                    )
+            r_0, r_1 = r_1, ordinate
+        abscissa_array[-1] = (self.n + 1) * self.h
 
-        plt.title("Approximations y1, y2")
-        plt.xlabel("t")
-        plt.ylabel("y1, y2")
+        plt.title("Height (time) m / s-")
+        plt.xlabel("Time (s)")
+        plt.ylabel("Height (m)")
         plt.grid()
-        plt.plot(abscissa_array, ord_array_1, abscissa_array, ord_array_2)
+        plt.plot(abscissa_array, ordinate_array)
         plt.show()
 
-        return f"r(t) ~ {r_difference_sum / iterations}t"
 
-
-trier = Equation()
-print(trier.solve())
+trier = Equation(time=400)
+trier.solve()
