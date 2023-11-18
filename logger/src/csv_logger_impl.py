@@ -15,7 +15,7 @@ class CsvLogger(LoggerInterface):
     _filename: str = None
     _instance: Self = None
 
-    def __init__(self, filename: str):
+    def __init__(self, filename: str = "out.csv"):
         """
         Public constructor
 
