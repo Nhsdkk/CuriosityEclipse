@@ -120,7 +120,9 @@ class KRPCClientSingleton:
 
         return Vector(point, zero_point).modulo
 
-    def get_current_pressure(self, celestial_body_radius: float, celestial_body: CelestialBody = None) -> float:
+    def get_current_pressure(
+        self, celestial_body_radius: float, celestial_body: CelestialBody = None
+    ) -> float:
         """
         Get current atmosphere pressure at the celestial body.
 
