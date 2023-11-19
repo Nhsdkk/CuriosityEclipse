@@ -5,6 +5,10 @@ from shared.point import Point
 from shared.vector import Vector
 from shared.singleton import singleton
 
+KG_IN_TON = 1e3
+SOLID_FUEL_UNITS_TO_KG = 7.5
+LIQUID_FUEL_UNITS_TO_KG = 5
+
 
 @singleton
 class KRPCClientSingleton:
@@ -14,12 +18,12 @@ class KRPCClientSingleton:
 
     def __init__(self, address: str, port: int = 1000, stream_port: int = 1001) -> None:
         """
-        Get KRPC client instance
+        Public constructor
 
-        :param address: ip address of the server
-        :param port: port of the server
-        :param stream_port: port for io stream
-        :return: KRPC client instance
+        :param address: Ip address of the server
+        :param port: Port of the server
+        :param stream_port: Port for io stream
+        :return: None
         """
         self._client = connect(
             name="KSP_client",
@@ -32,21 +36,29 @@ class KRPCClientSingleton:
         """
         Get all fuel objects.
 
-        :return: List of Resource objects, that corresponds to fuel
+        :return: List of Resource objects, that corresponds to fuel with amount in kg
         """
         resources = self._client.space_center.active_vessel.resources.all
-        return [
+        fuel_resources = [
             resource
             for resource in resources
             if "Fuel" in resource.name or "fuel" in resource.name
         ]
+
+        for fuel_resource in fuel_resources:
+            if fuel_resource.name == "SolidFuel":
+                fuel_resource.amount *= SOLID_FUEL_UNITS_TO_KG
+            else:
+                fuel_resource.amount *= LIQUID_FUEL_UNITS_TO_KG
+
+        return fuel_resources
 
     def get_current_resource_amount_by_name(self, name: str) -> float:
         """
         Get total resource amount by name at the particular moment.
 
         :param name: Name of the resource
-        :return: Total amount of the resource
+        :return: Total amount of the resource in ksp units
         """
         return self._client.space_center.active_vessel.resources.amount(name)
 
@@ -54,16 +66,16 @@ class KRPCClientSingleton:
         """
         Get total mass of the rocket at the particular moment
 
-        :return: total mass of the rocket
+        :return: Total mass of the rocket in kg
         """
-        return self._client.space_center.active_vessel.mass
+        return self._client.space_center.active_vessel.mass * KG_IN_TON
 
     def get_current_pos(self, reference: ReferenceFrame = None) -> Point:
         """
         Get current position point
 
-        :param reference: reference object, from which position will be calculated
-        :return: position point
+        :param reference: Reference object, from which position will be calculated
+        :return: Position point with parameters in meters
         """
         if reference is None:
             reference = self._client.space_center.bodies["Kerbin"].reference_frame
@@ -81,7 +93,7 @@ class KRPCClientSingleton:
             celestial_body = self._client.space_center.bodies["Kerbin"]
 
         pos_point = Point(
-            self._client.space_center.active_vessel.position(
+            *self._client.space_center.active_vessel.position(
                 celestial_body.reference_frame
             )
         )
@@ -94,7 +106,7 @@ class KRPCClientSingleton:
         Get current velocity.
 
         :param celestial_body: Celestial body, from which the velocity will be calculated
-        :return:
+        :return: Velocity, relative to the celestial body in m / sec
         """
         if celestial_body is None:
             reference_frame = self._client.space_center.bodies["Kerbin"].reference_frame
@@ -108,23 +120,24 @@ class KRPCClientSingleton:
 
         return Vector(point, zero_point).modulo
 
-    def get_current_pressure(self, celestial_body: CelestialBody) -> float:
+    def get_current_pressure(self, celestial_body_radius: float, celestial_body: CelestialBody = None) -> float:
         """
         Get current atmosphere pressure at the celestial body.
 
+        :param celestial_body_radius: Radius of the celestial body
         :param celestial_body: Celestial body, where the pressure will be calculated
-        :return: pressure value
+        :return: Pressure value at current altitude in pascals
         """
         if celestial_body is None:
             celestial_body = self._client.space_center.bodies["Kerbin"]
 
         abs_pos = Point(
-            self._client.space_center.active_vessel.position(
+            *self._client.space_center.active_vessel.position(
                 celestial_body.reference_frame
             )
         )
         zero_point = Point()
-        altitude = Vector(abs_pos, zero_point).modulo
+        altitude = Vector(abs_pos, zero_point).modulo - celestial_body_radius
 
         return celestial_body.pressure_at(altitude)
 
@@ -145,6 +158,6 @@ class KRPCClientSingleton:
         """
         Get time elapsed from start.
 
-        :return: time elapsed from start
+        :return: Time elapsed from start in seconds
         """
         return self._client.space_center.active_vessel.met

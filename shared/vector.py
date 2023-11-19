@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from math import sqrt
 
-from point import Point
+from shared.point import Point
 
 
 @dataclass
