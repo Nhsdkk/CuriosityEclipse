@@ -1,8 +1,8 @@
 from krpc import connect
 from krpc.services.spacecenter import Resource, ReferenceFrame, CelestialBody
 
-from shared.point import Point
-from shared.vector import Vector
+# from shared.point import Point
+# from shared.vector import Vector
 from shared.singleton import singleton
 
 KG_IN_TON = 1e3
@@ -70,9 +70,21 @@ class KRPCClientSingleton:
         """
         return self._client.space_center.active_vessel.mass * KG_IN_TON
 
-    def get_current_pos(self, reference: ReferenceFrame = None) -> Point:
+    # def get_current_pos(self, reference: ReferenceFrame = None) -> Point:
+    #     """
+    #     Get current position point
+    #
+    #     :param reference: Reference object, from which position will be calculated
+    #     :return: Position point with parameters in meters
+    #     """
+    #     if reference is None:
+    #         reference = self._client.space_center.bodies["Kerbin"].reference_frame
+    #
+    #     return Point(*self._client.space_center.active_vessel.position(reference))
+
+    def get_current_altitude(self, reference: ReferenceFrame = None) -> float:
         """
-        Get current position point
+        Get current altitude.
 
         :param reference: Reference object, from which position will be calculated
         :return: Position point with parameters in meters
@@ -80,7 +92,10 @@ class KRPCClientSingleton:
         if reference is None:
             reference = self._client.space_center.bodies["Kerbin"].reference_frame
 
-        return Point(*self._client.space_center.active_vessel.position(reference))
+        return (
+            self._client.space_center.active_vessel.flight(reference).mean_altitude
+            + 7.1
+        )
 
     def get_celestial_body_radius(self, celestial_body: CelestialBody = None) -> float:
         """
@@ -92,14 +107,7 @@ class KRPCClientSingleton:
         if celestial_body is None:
             celestial_body = self._client.space_center.bodies["Kerbin"]
 
-        pos_point = Point(
-            *self._client.space_center.active_vessel.position(
-                celestial_body.reference_frame
-            )
-        )
-        zero_point = Point()
-
-        return Vector(zero_point, pos_point).modulo
+        return celestial_body.equatorial_radius
 
     def get_current_velocity(self, celestial_body: CelestialBody = None) -> float:
         """
@@ -113,35 +121,21 @@ class KRPCClientSingleton:
         else:
             reference_frame = celestial_body.reference_frame
 
-        point = Point(
-            *self._client.space_center.active_vessel.velocity(reference_frame)
-        )
-        zero_point = Point()
+        return self._client.space_center.active_vessel.flight(reference_frame).speed
 
-        return Vector(point, zero_point).modulo
-
-    def get_current_pressure(
-        self, celestial_body_radius: float, celestial_body: CelestialBody = None
-    ) -> float:
+    def get_current_pressure(self, celestial_body: CelestialBody = None) -> float:
         """
         Get current atmosphere pressure at the celestial body.
 
-        :param celestial_body_radius: Radius of the celestial body
         :param celestial_body: Celestial body, where the pressure will be calculated
         :return: Pressure value at current altitude in pascals
         """
         if celestial_body is None:
             celestial_body = self._client.space_center.bodies["Kerbin"]
 
-        abs_pos = Point(
-            *self._client.space_center.active_vessel.position(
-                celestial_body.reference_frame
-            )
-        )
-        zero_point = Point()
-        altitude = Vector(abs_pos, zero_point).modulo - celestial_body_radius
-
-        return celestial_body.pressure_at(altitude)
+        return self._client.space_center.active_vessel.flight(
+            celestial_body.reference_frame
+        ).static_pressure
 
     def get_celestial_body_by_name(self, celestial_body_name: str) -> CelestialBody:
         """
