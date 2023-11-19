@@ -3,3 +3,5 @@ poetry.lock
 *.pyc
 *.nbi
 *.nbc
+
+math_model/src/rocket_flight_stats.txt
