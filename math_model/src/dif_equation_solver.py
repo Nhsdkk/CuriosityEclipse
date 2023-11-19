@@ -1,7 +1,6 @@
-from typing import Union
+from typing import Union, Any
 import math
 import numpy as np
-import matplotlib.pyplot as plt
 import constants
 
 
@@ -213,11 +212,11 @@ class Equation:
         x = self._find_root_rough_approximation(current_flight_time, r_i_minus1, r_i)
         return min(roots, key=lambda q: abs(q - x))
 
-    def solve(self) -> None:
+    def solve(self) -> tuple[np.ndarray[Any, np.dtype], np.ndarray[Any, np.dtype]]:
         """
-        Main function to solve differential equation.
+        Main function to solve differential equation and get the .
 
-        :return: None
+        :return: t_array, height_array, that corresponds to each other
         """
         r_0 = self.r0
         r_1 = self.r1
@@ -241,9 +240,4 @@ class Equation:
             r_0, r_1 = r_1, ordinate
         abscissa_array[-1] = (self.n + 1) * self.h
 
-        plt.title("Height (time) m / s")
-        plt.xlabel("Time (s)")
-        plt.ylabel("Height (m)")
-        plt.grid()
-        plt.plot(abscissa_array, ordinate_array)
-        plt.show()
+        return abscissa_array, ordinate_array
