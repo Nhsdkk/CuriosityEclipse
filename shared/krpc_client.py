@@ -145,7 +145,7 @@ class KRPCClientSingleton:
         :return: Celestial body object
         """
         celestial_body = self._client.space_center.bodies.get(celestial_body_name)
-        if celestial_body_name is None:
+        if celestial_body is None:
             raise KeyError(f"Celestial body with name {celestial_body_name}")
 
         return celestial_body

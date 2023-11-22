@@ -46,7 +46,6 @@ class CsvLogger(LoggerInterface):
         df = pandas.DataFrame.from_dict(self._columns)
         df.to_csv(self._filename, index=False, mode="a")
 
-    @debug
     def log(self, variable_type: str, value: float) -> None:
         """
         Save value of the variable
