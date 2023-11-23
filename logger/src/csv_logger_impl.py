@@ -3,7 +3,6 @@ from typing import Self
 
 
 from logger.src.logger_interface import LoggerInterface
-from shared.debugger import debug
 from shared.singleton import singleton
 
 
@@ -46,7 +45,6 @@ class CsvLogger(LoggerInterface):
         df = pandas.DataFrame.from_dict(self._columns)
         df.to_csv(self._filename, index=False, mode="a")
 
-    @debug
     def log(self, variable_type: str, value: float) -> None:
         """
         Save value of the variable

@@ -1,13 +1,17 @@
 from krpc import connect
-from krpc.services.spacecenter import Resource, ReferenceFrame, CelestialBody
+from krpc.services.spacecenter import ReferenceFrame, CelestialBody
+from enum import Enum
 
-# from shared.point import Point
-# from shared.vector import Vector
 from shared.singleton import singleton
 
 KG_IN_TON = 1e3
 SOLID_FUEL_UNITS_TO_KG = 7.5
 LIQUID_FUEL_UNITS_TO_KG = 5
+
+
+class FuelType(Enum):
+    SOLID_FUEL = "SolidFuel"
+    LIQUID_FUEL = "LiquidFuel"
 
 
 @singleton
@@ -32,26 +36,28 @@ class KRPCClientSingleton:
             stream_port=stream_port,
         )
 
-    def get_current_fuel_resource_objects(self) -> list[Resource]:
+    def get_fuel_amount(self, fuel_type: FuelType) -> float:
         """
-        Get all fuel objects.
+        Get total mass of fuel with type fuel_type.
 
+        :type fuel_type: Type of the fuel
         :return: List of Resource objects, that corresponds to fuel with amount in kg
         """
         resources = self._client.space_center.active_vessel.resources.all
         fuel_resources = [
-            resource
-            for resource in resources
-            if "Fuel" in resource.name or "fuel" in resource.name
+            resource for resource in resources if fuel_type.value in resource.name
         ]
 
-        for fuel_resource in fuel_resources:
-            if fuel_resource.name == "SolidFuel":
-                fuel_resource.amount *= SOLID_FUEL_UNITS_TO_KG
-            else:
-                fuel_resource.amount *= LIQUID_FUEL_UNITS_TO_KG
-
-        return fuel_resources
+        if fuel_type == FuelType.SOLID_FUEL:
+            return (
+                sum([resource.amount for resource in fuel_resources])
+                * SOLID_FUEL_UNITS_TO_KG
+            )
+        else:
+            return (
+                sum([resource.amount for resource in fuel_resources])
+                * LIQUID_FUEL_UNITS_TO_KG
+            )
 
     def get_current_resource_amount_by_name(self, name: str) -> float:
         """
@@ -145,7 +151,7 @@ class KRPCClientSingleton:
         :return: Celestial body object
         """
         celestial_body = self._client.space_center.bodies.get(celestial_body_name)
-        if celestial_body_name is None:
+        if celestial_body is None:
             raise KeyError(f"Celestial body with name {celestial_body_name}")
 
         return celestial_body
