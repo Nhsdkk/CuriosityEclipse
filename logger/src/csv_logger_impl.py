@@ -3,7 +3,6 @@ from typing import Self
 
 
 from logger.src.logger_interface import LoggerInterface
-from shared.debugger import debug
 from shared.singleton import singleton
 
 

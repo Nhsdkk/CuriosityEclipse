@@ -21,9 +21,7 @@ if __name__ == "__main__":
             logger.log("SolidFuel", current_solid_fuel_resource)
             current_liquid_fuel_resource = client.get_fuel_amount(FuelType.LIQUID_FUEL)
             logger.log("LiquidFuel", current_liquid_fuel_resource)
-            print(
-                f"Current: time {current_time}"
-            )
+            print(f"Current: time {current_time}")
             time.sleep(1e-3)
     except KeyboardInterrupt as err:
         print(err)

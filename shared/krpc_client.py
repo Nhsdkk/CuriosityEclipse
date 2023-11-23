@@ -45,15 +45,19 @@ class KRPCClientSingleton:
         """
         resources = self._client.space_center.active_vessel.resources.all
         fuel_resources = [
-            resource
-            for resource in resources
-            if fuel_type.value in resource.name
+            resource for resource in resources if fuel_type.value in resource.name
         ]
 
         if fuel_type == FuelType.SOLID_FUEL:
-            return sum([resource.amount for resource in fuel_resources]) * SOLID_FUEL_UNITS_TO_KG
+            return (
+                sum([resource.amount for resource in fuel_resources])
+                * SOLID_FUEL_UNITS_TO_KG
+            )
         else:
-            return sum([resource.amount for resource in fuel_resources]) * LIQUID_FUEL_UNITS_TO_KG
+            return (
+                sum([resource.amount for resource in fuel_resources])
+                * LIQUID_FUEL_UNITS_TO_KG
+            )
 
     def get_current_resource_amount_by_name(self, name: str) -> float:
         """
@@ -95,8 +99,8 @@ class KRPCClientSingleton:
             reference = self._client.space_center.bodies["Kerbin"].reference_frame
 
         return (
-                self._client.space_center.active_vessel.flight(reference).mean_altitude
-                + 7.1
+            self._client.space_center.active_vessel.flight(reference).mean_altitude
+            + 7.1
         )
 
     def get_celestial_body_radius(self, celestial_body: CelestialBody = None) -> float:
