@@ -1,7 +1,7 @@
 from typing import Union, Any
 import math
 import numpy as np
-import constants
+from math_model.src import constants
 
 
 class Equation:

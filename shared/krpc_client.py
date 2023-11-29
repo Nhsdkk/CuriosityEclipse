@@ -3,6 +3,8 @@ from krpc.services.spacecenter import ReferenceFrame, CelestialBody
 from enum import Enum
 
 from shared.singleton import singleton
+from shared.vector import Vector
+from shared.point import Point
 
 KG_IN_TON = 1e3
 SOLID_FUEL_UNITS_TO_KG = 7.5
@@ -163,3 +165,19 @@ class KRPCClientSingleton:
         :return: Time elapsed from start in seconds
         """
         return self._client.space_center.active_vessel.met
+
+    def get_current_position(self, reference_frame: ReferenceFrame = None) -> Vector:
+        if reference_frame is None:
+            reference_frame = self._client.space_center.bodies.get("Kerbin")
+
+        zero_point = Point(0, 0, 0)
+        end_point = Point(
+            *self._client.space_center.active_vessel.position(reference_frame)
+        )
+
+        return Vector(zero_point, end_point)
+
+    def get_current_temperature(self) -> float:
+        kerbin = self._client.space_center.bodies.get("Kerbin")
+        pos = self.get_current_position()
+        return kerbin.temperature_at(pos.end)
