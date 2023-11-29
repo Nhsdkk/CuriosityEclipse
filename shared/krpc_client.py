@@ -167,8 +167,14 @@ class KRPCClientSingleton:
         return self._client.space_center.active_vessel.met
 
     def get_current_position(self, reference_frame: ReferenceFrame = None) -> Vector:
+        """
+        Get vector to current position from reference frame
+
+        :param reference_frame: Reference object from which current position will be calculated
+        :return: Vector to current position
+        """
         if reference_frame is None:
-            reference_frame = self._client.space_center.bodies.get("Kerbin")
+            reference_frame = self._client.space_center.bodies.get("Kerbin").reference_frame
 
         zero_point = Point(0, 0, 0)
         end_point = Point(
@@ -178,6 +184,10 @@ class KRPCClientSingleton:
         return Vector(zero_point, end_point)
 
     def get_current_temperature(self) -> float:
+        """
+        Get current temperature on Kerbin in Kelvin
+        :return: Temperature on Kerbin in Kelvin
+        """
         kerbin = self._client.space_center.bodies.get("Kerbin")
         pos = self.get_current_position()
-        return kerbin.temperature_at(pos.end)
+        return kerbin.temperature_at((pos.end.x, pos.end.y, pos.end.z), kerbin.reference_frame)
