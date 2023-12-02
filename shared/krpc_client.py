@@ -86,7 +86,7 @@ class KRPCClientSingleton:
         :return: Position point with parameters in meters
         """
         if reference is None:
-            reference = self._client.space_center.bodies["Dune"].reference_frame
+            reference = self._client.space_center.bodies["Duna"].reference_frame
 
         return (
             self._client.space_center.active_vessel.flight(reference).mean_altitude
