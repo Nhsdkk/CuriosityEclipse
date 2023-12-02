@@ -2,10 +2,13 @@ from krpc import connect
 from krpc.services.spacecenter import ReferenceFrame, CelestialBody
 from enum import Enum
 
+<<<<<<< HEAD
 from shared.singleton import singleton
 from shared.vector import Vector
 from shared.point import Point
 
+=======
+>>>>>>> 2be258ed483b7ce6701e52104f720d3c086cf96e
 KG_IN_TON = 1e3
 SOLID_FUEL_UNITS_TO_KG = 7.5
 LIQUID_FUEL_UNITS_TO_KG = 5
