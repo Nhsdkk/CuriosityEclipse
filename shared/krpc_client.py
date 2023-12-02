@@ -3,6 +3,8 @@ from krpc.services.spacecenter import ReferenceFrame, CelestialBody
 from enum import Enum
 
 from shared.singleton import singleton
+from shared.vector import Vector
+from shared.point import Point
 
 KG_IN_TON = 1e3
 SOLID_FUEL_UNITS_TO_KG = 7.5
@@ -76,27 +78,15 @@ class KRPCClientSingleton:
         """
         return self._client.space_center.active_vessel.mass * KG_IN_TON
 
-    # def get_current_pos(self, reference: ReferenceFrame = None) -> Point:
-    #     """
-    #     Get current position point
-    #
-    #     :param reference: Reference object, from which position will be calculated
-    #     :return: Position point with parameters in meters
-    #     """
-    #     if reference is None:
-    #         reference = self._client.space_center.bodies["Kerbin"].reference_frame
-    #
-    #     return Point(*self._client.space_center.active_vessel.position(reference))
-
     def get_current_altitude(self, reference: ReferenceFrame = None) -> float:
         """
-        Get current altitude.
+        Get current altitude. (by default Duna reference frame)
 
         :param reference: Reference object, from which position will be calculated
         :return: Position point with parameters in meters
         """
         if reference is None:
-            reference = self._client.space_center.bodies["Kerbin"].reference_frame
+            reference = self._client.space_center.bodies["Duna"].reference_frame
 
         return (
             self._client.space_center.active_vessel.flight(reference).mean_altitude
@@ -105,25 +95,25 @@ class KRPCClientSingleton:
 
     def get_celestial_body_radius(self, celestial_body: CelestialBody = None) -> float:
         """
-        Get celestial body radius.
+        Get celestial body radius. (by default Duna as a celestial body)
 
         :param celestial_body: Celestial body, which radius will be calculated.
         :return: Celestial body radius.
         """
         if celestial_body is None:
-            celestial_body = self._client.space_center.bodies["Kerbin"]
+            celestial_body = self._client.space_center.bodies["Duna"]
 
         return celestial_body.equatorial_radius
 
     def get_current_velocity(self, celestial_body: CelestialBody = None) -> float:
         """
-        Get current velocity.
+        Get current velocity. (by default Duna as a celestial body)
 
         :param celestial_body: Celestial body, from which the velocity will be calculated
         :return: Velocity, relative to the celestial body in m / sec
         """
         if celestial_body is None:
-            reference_frame = self._client.space_center.bodies["Kerbin"].reference_frame
+            reference_frame = self._client.space_center.bodies["Duna"].reference_frame
         else:
             reference_frame = celestial_body.reference_frame
 
@@ -131,13 +121,13 @@ class KRPCClientSingleton:
 
     def get_current_pressure(self, celestial_body: CelestialBody = None) -> float:
         """
-        Get current atmosphere pressure at the celestial body.
+        Get current atmosphere pressure at the celestial body. (by default Duna as a celestial body)
 
         :param celestial_body: Celestial body, where the pressure will be calculated
         :return: Pressure value at current altitude in pascals
         """
         if celestial_body is None:
-            celestial_body = self._client.space_center.bodies["Kerbin"]
+            celestial_body = self._client.space_center.bodies["Duna"]
 
         return self._client.space_center.active_vessel.flight(
             celestial_body.reference_frame
@@ -163,3 +153,35 @@ class KRPCClientSingleton:
         :return: Time elapsed from start in seconds
         """
         return self._client.space_center.active_vessel.met
+
+    def get_current_position(self, reference_frame: ReferenceFrame = None) -> Vector:
+        """
+        Get vector to current position from reference frame (by default Duna reference frame)
+
+        :param reference_frame: Reference object from which current position will be calculated
+        :return: Vector to current position
+        """
+        if reference_frame is None:
+            reference_frame = self._client.space_center.bodies.get(
+                "Duna"
+            ).reference_frame
+
+        zero_point = Point(0, 0, 0)
+        end_point = Point(
+            *self._client.space_center.active_vessel.position(reference_frame)
+        )
+
+        return Vector(zero_point, end_point)
+
+    def get_current_temperature(self, celestial_body: CelestialBody = None) -> float:
+        """
+        Get current temperature in Kelvin (by default Duna as a celestial body)
+
+        :return: Temperature in Kelvin
+        """
+        if celestial_body is None:
+            celestial_body = self._client.space_center.bodies.get("Duna")
+        pos = self.get_current_position(celestial_body.reference_frame)
+        return celestial_body.temperature_at(
+            (pos.end.x, pos.end.y, pos.end.z), celestial_body.reference_frame
+        )
