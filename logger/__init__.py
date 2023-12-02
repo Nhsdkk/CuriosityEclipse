@@ -1,5 +1,3 @@
-import time
-
 from shared.krpc_client import FuelType
 from logger.src.csv_logger_impl import CsvLogger
 from logger.src.ksp_data_repository import KspDataRepository
@@ -31,7 +29,7 @@ if __name__ == "__main__":
                 FuelType.LIQUID_FUEL
             )
             logger.log("LiquidFuel", current_liquid_fuel_resource)
-            current_temp = client.get_current_temperature()
+            current_temp = ksp_data_repository.get_current_temperature()
             if current_altitude >= 70_000:
                 logger.log("Temperature", current_temp)
             print(f"Current: time {current_time}")
