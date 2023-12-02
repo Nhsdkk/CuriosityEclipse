@@ -16,9 +16,8 @@ class FuelType(Enum):
     LIQUID_FUEL = "LiquidFuel"
 
 
-@singleton
-class KRPCClientSingleton:
-    """A singleton class for KRPC client"""
+class KRPCClient:
+    """A base class for KRPC ksp_data_repository"""
 
     _client = None
 

@@ -8,7 +8,7 @@ def singleton(class_: Type[T]) -> Type[T]:
     Decorator to create singleton classes
 
     :param class_: Any class
-    :return: The same class, but as singleton
+    :return: The class instance
     """
     _instances: dict[Type[T]] = {}
 
