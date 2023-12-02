@@ -1,5 +1,3 @@
-import time
-
 from shared.krpc_client import KRPCClientSingleton, FuelType
 from logger.src.csv_logger_impl import CsvLogger
 

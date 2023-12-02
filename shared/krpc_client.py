@@ -162,7 +162,9 @@ class KRPCClientSingleton:
         :return: Vector to current position
         """
         if reference_frame is None:
-            reference_frame = self._client.space_center.bodies.get("Duna").reference_frame
+            reference_frame = self._client.space_center.bodies.get(
+                "Duna"
+            ).reference_frame
 
         zero_point = Point(0, 0, 0)
         end_point = Point(
@@ -174,9 +176,12 @@ class KRPCClientSingleton:
     def get_current_temperature(self, celestial_body: CelestialBody = None) -> float:
         """
         Get current temperature in Kelvin (by default Duna as a celestial body)
+
         :return: Temperature in Kelvin
         """
         if celestial_body is None:
             celestial_body = self._client.space_center.bodies.get("Duna")
         pos = self.get_current_position(celestial_body.reference_frame)
-        return celestial_body.temperature_at((pos.end.x, pos.end.y, pos.end.z), celestial_body.reference_frame)
+        return celestial_body.temperature_at(
+            (pos.end.x, pos.end.y, pos.end.z), celestial_body.reference_frame
+        )
