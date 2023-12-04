@@ -5,3 +5,6 @@ poetry.lock
 *.nbc
 
 math_model/src/rocket_flight_stats.txt
+autopilot/.idea
+autopilot/target
+autopilot/Cargo.lock

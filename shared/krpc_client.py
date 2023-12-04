@@ -2,7 +2,6 @@ from krpc import connect
 from krpc.services.spacecenter import ReferenceFrame, CelestialBody
 from enum import Enum
 
-from shared.singleton import singleton
 from shared.vector import Vector
 from shared.point import Point
 
@@ -16,9 +15,8 @@ class FuelType(Enum):
     LIQUID_FUEL = "LiquidFuel"
 
 
-@singleton
-class KRPCClientSingleton:
-    """A singleton class for KRPC client"""
+class KRPCClient:
+    """A base class for KRPC ksp_data_repository"""
 
     _client = None
 
