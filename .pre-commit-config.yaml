@@ -13,6 +13,7 @@ repos:
         exclude: |
             (?x)^(
                 autopilot/Cargo.toml
+                autopilot/Cargo.lock
             )$
       - id: trailing-whitespace
         args: [--markdown-linebreak-ext=md]
