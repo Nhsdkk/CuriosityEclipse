@@ -7,3 +7,4 @@ edition = "2021"
 
 [dependencies]
 krpc-client = { git = "https://github.com/kladd/krpc-client" }
+num = "0.4.1"
