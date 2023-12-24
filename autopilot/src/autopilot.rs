@@ -26,7 +26,6 @@ pub struct Autopilot{
 
 impl Autopilot{
     pub fn new(address: &str, port: u16, stream_port: u16) -> Self {
-        println!("Address: {:} Port: {:} Stream port: {:}", address, port, stream_port);
         let client = Client::new("Autopilot Client", address, port, stream_port).unwrap();
         let space_center = SpaceCenter::new(client.clone());
         let vessel = space_center.get_active_vessel().unwrap();
@@ -34,7 +33,7 @@ impl Autopilot{
         let bodies = space_center.get_bodies().unwrap();
         let duna = bodies.get("Duna").unwrap();
         let flight = vessel.flight(Some(&duna.get_reference_frame().unwrap())).unwrap();
-
+        println!("Connected!");
         Autopilot{vessel, controller, flight}
     }
 
@@ -130,6 +129,7 @@ impl Autopilot{
     }
 
     pub fn land(&mut self) {
+        println!("Starting autopilot...");
         self.lower_periapsis_altitude();
         sleep(Duration::from_secs(15));
         self.detach_engine();

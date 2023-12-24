@@ -87,8 +87,7 @@ class KRPCClient:
             reference = self._client.space_center.bodies["Duna"].reference_frame
 
         return (
-            self._client.space_center.active_vessel.flight(reference).mean_altitude
-            + 7.1
+            self._client.space_center.active_vessel.flight(reference).surface_altitude
         )
 
     def get_celestial_body_radius(self, celestial_body: CelestialBody = None) -> float:
@@ -183,3 +182,26 @@ class KRPCClient:
         return celestial_body.temperature_at(
             (pos.end.x, pos.end.y, pos.end.z), celestial_body.reference_frame
         )
+
+    def get_current_velocity_vector(self) -> Vector:
+        """
+        Get current velocity vector.
+        :return: Current velocity vector
+        """
+
+        zero_point = Point(0, 0, 0)
+        end_point = Point(
+            *self._client.space_center.active_vessel.velocity(
+                self._client.space_center.active_vessel.orbit.body.reference_frame
+            )
+        )
+        return Vector(zero_point, end_point)
+
+    def get_current_angle(self) -> float:
+        """
+        Get current angle.
+        :return: Current angle
+        """
+        velocity_vector = self.get_current_velocity_vector()
+        pos_vector = self.get_current_position()
+        return velocity_vector.calculate_angle(pos_vector)
