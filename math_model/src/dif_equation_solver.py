@@ -38,9 +38,9 @@ class Equation:
         self.r1 = (
             (
                 self.p_thrust / self._find_mass(self.h)
-                - constants.G * constants.EARTH_MASS / constants.EARTH_RADIUS ** 2
+                - constants.G * constants.EARTH_MASS / constants.EARTH_RADIUS**2
             )
-            * self.h ** 2
+            * self.h**2
             / 2
         )
         self.volume = volume
@@ -166,7 +166,7 @@ class Equation:
         )
         a = w_i / 4
         b = -1 - r_i_minus1 * w_i / 2
-        c = 2 * r_i - r_i_minus1 + w_i * r_i_minus1 ** 2 / 4 + self.h ** 2 * fi_i
+        c = 2 * r_i - r_i_minus1 + w_i * r_i_minus1**2 / 4 + self.h**2 * fi_i
         return np.roots(np.array([a, b, c]))
 
     def _find_root_rough_approximation(
@@ -186,7 +186,7 @@ class Equation:
         w_i, fi_i = self._w(r_i, current_flight_time), self._fi(
             r_i, current_flight_time
         )
-        return 2 * r_i - r_i_minus1 + self.h ** 2 * fi_i + w_i * (r_i - r_i_minus1) ** 2
+        return 2 * r_i - r_i_minus1 + self.h**2 * fi_i + w_i * (r_i - r_i_minus1) ** 2
 
     def _get_next_r(
         self,

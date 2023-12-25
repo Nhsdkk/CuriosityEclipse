@@ -200,7 +200,7 @@ class KRPCClient:
     def get_current_angle(self) -> float:
         """
         Get current angle.
-        
+
         :return: Current angle
         """
         velocity_vector = self.get_current_velocity_vector()
