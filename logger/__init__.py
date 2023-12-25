@@ -4,15 +4,11 @@ from logger.src.ksp_data_repository import KspDataRepository
 
 
 if __name__ == "__main__":
-    ksp_data_repository = KspDataRepository("localhost")
+    ksp_data_repository = KspDataRepository("localhost", 1000, 1001)
     logger = CsvLogger()
-    pr = 305.90346835177905
-    pr_alt = 86.72108320347033
-
-    summ = 0
-    i = 0
-    try:
-        while True:
+    print("Started")
+    while True:
+        try:
             current_time = ksp_data_repository.get_current_time()
             logger.log("Time", current_time)
             current_altitude = ksp_data_repository.get_current_altitude()
@@ -30,9 +26,11 @@ if __name__ == "__main__":
             )
             logger.log("LiquidFuel", current_liquid_fuel_resource)
             current_temp = ksp_data_repository.get_current_temperature()
-            if current_altitude >= 70_000:
-                logger.log("Temperature", current_temp)
-            print(f"Current: time {current_time}")
-    except KeyboardInterrupt as err:
-        print(err)
-        logger.dump()
+
+            logger.log("Temperature", current_temp)
+            current_angle = ksp_data_repository.get_current_angle()
+            logger.log("Angle", current_angle)
+            # print(f"Current: time {current_time}")
+        except KeyboardInterrupt as err:
+            print(err)
+            logger.dump()

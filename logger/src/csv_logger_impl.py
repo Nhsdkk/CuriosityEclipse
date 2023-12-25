@@ -43,7 +43,7 @@ class CsvLogger(LoggerInterface):
         """
         self._clean_data()
         df = pandas.DataFrame.from_dict(self._columns)
-        df.to_csv(self._filename, index=False, mode="a")
+        df.to_csv(self._filename, index=False, mode="w")
 
     def log(self, variable_type: str, value: float) -> None:
         """

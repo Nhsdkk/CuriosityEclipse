@@ -26,3 +26,18 @@ class GraphGenerator:
         plt.grid()
         plt.plot(t_arr, height_arr)
         plt.show()
+
+    @staticmethod
+    def create_graph(
+        plot_name: str,
+        x_name: str,
+        y_name: str,
+        x_arr: ndarray[Any, dtype],
+        y_arr: ndarray[Any, dtype],
+    ) -> None:
+        plt.title(plot_name)
+        plt.xlabel(x_name)
+        plt.ylabel(y_name)
+        plt.grid()
+        plt.plot(x_arr, y_arr)
+        plt.show()
