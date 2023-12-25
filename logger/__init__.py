@@ -1,28 +1,36 @@
-import time
-
-from shared.krpc_client import KRPCClientSingleton, FuelType
+from shared.krpc_client import FuelType
 from logger.src.csv_logger_impl import CsvLogger
+from logger.src.ksp_data_repository import KspDataRepository
 
 
 if __name__ == "__main__":
-    client = KRPCClientSingleton("localhost")
+    ksp_data_repository = KspDataRepository("localhost", 1000, 1001)
     logger = CsvLogger()
-    try:
-        while True:
-            current_time = client.get_current_time()
+    print("Started")
+    while True:
+        try:
+            current_time = ksp_data_repository.get_current_time()
             logger.log("Time", current_time)
-            current_altitude = client.get_current_altitude()
+            current_altitude = ksp_data_repository.get_current_altitude()
             logger.log("Altitude", current_altitude)
-            current_pressure = client.get_current_pressure()
+            current_pressure = ksp_data_repository.get_current_pressure()
             logger.log("Pressure", current_pressure)
-            current_velocity = client.get_current_velocity()
+            current_velocity = ksp_data_repository.get_current_velocity()
             logger.log("Velocity", current_velocity)
-            current_solid_fuel_resource = client.get_fuel_amount(FuelType.SOLID_FUEL)
+            current_solid_fuel_resource = ksp_data_repository.get_fuel_amount(
+                FuelType.SOLID_FUEL
+            )
             logger.log("SolidFuel", current_solid_fuel_resource)
-            current_liquid_fuel_resource = client.get_fuel_amount(FuelType.LIQUID_FUEL)
+            current_liquid_fuel_resource = ksp_data_repository.get_fuel_amount(
+                FuelType.LIQUID_FUEL
+            )
             logger.log("LiquidFuel", current_liquid_fuel_resource)
-            print(f"Current: time {current_time}")
-            time.sleep(1e-3)
-    except KeyboardInterrupt as err:
-        print(err)
-        logger.dump()
+            current_temp = ksp_data_repository.get_current_temperature()
+
+            logger.log("Temperature", current_temp)
+            current_angle = ksp_data_repository.get_current_angle()
+            logger.log("Angle", current_angle)
+            # print(f"Current: time {current_time}")
+        except KeyboardInterrupt as err:
+            print(err)
+            logger.dump()
