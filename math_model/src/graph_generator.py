@@ -30,8 +30,10 @@ class GraphGenerator:
     @staticmethod
     def create_graph(
         plot_name: str,
-        x_name: str, y_name: str,
-        x_arr: ndarray[Any, dtype], y_arr: ndarray[Any, dtype],
+        x_name: str,
+        y_name: str,
+        x_arr: ndarray[Any, dtype],
+        y_arr: ndarray[Any, dtype],
     ) -> None:
         plt.title(plot_name)
         plt.xlabel(x_name)

@@ -47,5 +47,7 @@ class Vector:
         x, other_x = self.end.x - self.start.x, other.end.x - other.start.x
         y, other_y = self.end.y - self.start.y, other.end.y - other.start.y
         z, other_z = self.end.z - self.start.z, other.end.z - other.start.z
-        cos = abs(x * other_x + y * other_y + z * other_z) / (self.modulo * other.modulo)
+        cos = abs(x * other_x + y * other_y + z * other_z) / (
+            self.modulo * other.modulo
+        )
         return math.degrees(acos(cos))
