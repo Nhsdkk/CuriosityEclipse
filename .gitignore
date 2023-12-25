@@ -8,3 +8,5 @@ math_model/src/rocket_flight_stats.txt
 autopilot/.idea
 autopilot/target
 #autopilot/Cargo.lock
+math_model/src/ode_solver_phase1.py
+math_model/rocket_flight_stats.txt
